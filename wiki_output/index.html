@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>衣物洗滌標示教學簡報</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand { font-weight: 700; font-size: 16px; color: #334155; }
+        .page-badge {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0284c7;
+            background: #e0f2fe;
+            padding: 4px 14px;
+            border-radius: 999px;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .deck-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 920px;
+            height: 540px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e2e8f0;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+        .slide {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .slide.active { display: flex; }
+        .center-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .icon-row { display: flex; gap: 18px; margin-bottom: 28px; }
+        h1 { font-size: 34px; font-weight: 800; color: #0f172a; margin-bottom: 16px; line-height: 1.3; }
+        h2 { font-size: 26px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+        .subtitle { font-size: 18px; color: #64748b; max-width: 660px; line-height: 1.6; margin-bottom: 28px; }
+        .hint { font-size: 13px; color: #94a3b8; }
+        .badge { font-size: 13px; font-weight: 700; color: #0284c7; }
+        .cat-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .icon-box { padding: 12px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; }
+        .summary-box {
+            font-size: 17px;
+            color: #475569;
+            background: #f8fafc;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        .rule-list { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 17px; color: #334155; }
+        .rule-list li { display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+        .rule-list .dot { color: #0284c7; font-weight: 900; }
+        .warning-box {
+            padding: 14px 18px;
+            background: #fff1f2;
+            border-left: 5px solid #e11d48;
+            border-radius: 0 12px 12px 0;
+            color: #9f1239;
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; text-align: center; }
+        .step-card { padding: 14px; border-radius: 14px; border: 1px solid #cbd5e1; background: #f8fafc; }
+        .step-card strong { display: block; font-size: 15px; margin-bottom: 6px; color: #0f172a; }
+        .step-card span { font-size: 12px; color: #475569; line-height: 1.4; display: block; }
+        .log-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 18px; }
+        .log-title { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+        .log-list { list-style: none; max-height: 150px; overflow-y: auto; }
+        .log-list li { font-size: 12px; color: #334155; padding: 5px 0; border-bottom: 1px solid #e2e8f0; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 16px; }
+        .card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 20px; }
+        .card h3 { font-size: 19px; margin-bottom: 10px; color: #0f172a; }
+        .big-symbol { font-size: 30px; font-weight: 900; margin-bottom: 10px; }
+        .step-text { font-size: 14px; color: #475569; margin-bottom: 10px; line-height: 1.5; }
+        .forbid-text { font-size: 14px; color: #e11d48; line-height: 1.5; }
+        .quiz-list { display: flex; flex-direction: column; gap: 12px; margin: 18px 0; }
+        .quiz-btn {
+            width: 100%;
+            text-align: left;
+            padding: 15px 18px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+        }
+        .quiz-btn:hover { background: #f0f9ff; border-color: #0284c7; }
+        .quiz-feedback { padding: 14px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; display: none; }
+        .quiz-feedback.ok { display: block; background: #d1fae5; color: #065f46; }
+        .quiz-feedback.err { display: block; background: #ffe4e6; color: #9f1239; }
+        footer {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-btn {
+            padding: 10px 22px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-prev { background: #e2e8f0; color: #334155; }
+        .btn-prev:hover { background: #cbd5e1; }
+        .btn-next { background: #0284c7; color: #ffffff; }
+        .btn-next:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">LLM Wiki 教學簡報｜洗衣標示全解析</div>
+        <div id="page-indicator" class="page-badge">1 / 11</div>
+    </header>
+
+    <main>
+        <div class="deck-card">
+            <section class="slide active center-slide">
+                <div class="icon-row">
+                    <svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#0284c7" stroke-width="5"><path d="M15 35 L25 75 L75 75 L85 35"/><path d="M18 48 Q35 42 50 48 T82 48"/><circle cx="50" cy="62" r="4" fill="#0284c7"/></svg><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#d97706" stroke-width="5"><polygon points="50,20 85,80 15,80"/><line x1="42" y1="68" x2="58" y2="42"/><line x1="54" y1="72" x2="68" y2="48"/></svg><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#059669" stroke-width="5"><rect x="20" y="20" width="60" height="60" rx="4"/><circle cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="4" fill="#059669"/></svg><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#e11d48" stroke-width="5"><path d="M25 35 L65 35 L82 70 L18 70 Q20 50 38 50 L72 50"/><circle cx="42" cy="60" r="3.5" fill="#e11d48"/><circle cx="56" cy="60" r="3.5" fill="#e11d48"/></svg><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#4f46e5" stroke-width="5"><circle cx="50" cy="50" r="32"/><text x="50" y="61" text-anchor="middle" fill="#4f46e5" stroke="none" font-size="30" font-weight="bold">P</text></svg>
+                </div>
+                <h1>衣物洗滌標示教學簡報</h1>
+                <p class="subtitle">新手快速上手指南</p>
+                <div class="hint">知識來源：CNS 8148 與 ISO 3758 結構化知識庫（點擊下方按鈕或按鍵盤左右方向鍵翻頁）</div>
+            </section>
+
+            <section class="slide">
+                <div>
+                    <div class="badge">系統架構與知識來源</div>
+                    <h2>這份簡報是如何從 LLM Wiki 誕生的？</h2>
+                    <div class="grid-4">
+                        <div class="step-card"><strong>1. 資料擷取匯入</strong><span>讀取 5 篇國家標準與紡織保養文獻</span></div>
+                        <div class="step-card"><strong>2. Wiki 結構化</strong><span>建立 7 個雙向連結 [[概念節點]]</span></div>
+                        <div class="step-card"><strong>3. 品質檢查迴圈</strong><span>自動審核規範一致性與自動修正</span></div>
+                        <div class="step-card"><strong>4. HTML 簡報生成</strong><span>鎖定 Wiki 事實輸出教學投影片</span></div>
+                    </div>
+                </div>
+                <div class="log-box">
+                    <div class="log-title">狀態機執行驗證軌跡（自動檢查與修正紀錄）：</div>
+                    <ul class="log-list"><li>[資料擷取] 已處理 文獻 03《居家衣物漂白劑化學原理與纖維保護》 → 目前累積 7 個知識節點</li><li>[品質檢查] 結果=未通過｜意見：審核結果說明：內容大致符合 CNS 8148 / ISO 3758 的符號說明，文字亦以白話呈現，但存在以下問題使其未通過：  
+
+1. **頁面編號衝突** – 「02_漂白符號與漂白方式」與「02_漂白符號與化學藥劑」使用相同的頁面名稱，會造成 Wiki 內部連結錯亂。  
+2. **跨頁連結不足或不當** –  
+   - 首頁「00_洗滌標示系統總覽」僅連結到自己，缺乏實際的跨頁導向。  
+   - 「02_漂白符號與化學藥劑」僅自我連結，未提供與其他相關頁面的導覽，違反「必須包含 [[跨頁連結]]」的要求。  
+3. **少數事實細節需修正** –  
+   - 專業紡織品維護頁面中，ISO 3758 中的「F」與「W」符號說明略有出入（「F」代表專業乾洗，非僅「溫和碳氫溶劑」），建議依標準文字說明調整。  
+4. **格式與說明一致性** – 部分頁面使用粗體、列表方式說明清晰，但在「05_專業紡織品維護」缺少與其他頁面的「前往/相關頁面」區塊，建議補全以提升新手導覽體驗。  
+
+綜合以上，雖然核心資訊正確且易懂，但因頁面命名衝突、跨頁連結不完整以及少量事實描述需校正，未能完全符合審核標準。建議先解決上述問題後再重新提交。</li><li>[自動修正] 已依據審核意見完成第 1 次條目修訂</li><li>[品質檢查] 結果=未通過｜意見：審核說明：內容在符號說明上大致符合 CNS 8148 / ISO 3758，文字亦相對白話易懂，且皆有跨頁連結。但 Wiki 結構出現嚴重問題：**頁面代碼重複**（「02_漂白符號與漂白方式」與「02_漂白符號與化學藥劑」同為 02 開頭，且「04_漂白符號與化學藥劑」與 02 內容重複），導致連結可能指向錯誤或產生循環；此外部分頁面（如 04）與其他頁面內容完全相同，缺乏必要的分工與唯一性。這些結構性錯誤會讓新手在瀏覽時產生混淆，故未通過審核。建議重新編排頁面編號，確保每個代碼唯一，並去除或合併重複內容後再行審核。</li><li>[資料擷取] 已處理 文獻 04《針織毛衣與機能外套官方保養手冊》 → 目前累積 9 個知識節點</li><li>[品質檢查] 結果=未通過｜意見：審核結果顯示本 Wiki 雖在符號說明上大致符合 CNS 8148 / ISO 3758 的事實規範，且文字通俗易懂，但存在多項結構性問題：  
+1. **頁面編號重複**（02、04 各出現兩個不同內容的頁面），導致跨頁連結模糊不清。  
+2. **跨頁連結不完整**：例如「03_乾燥與烘乾方式」僅自我連結，缺少指向其他相關頁面的連結，未形成完整的導覽網。  
+3. **部分連結指向不存在或重名的頁面**（如 [[04_漂白符號與化學藥劑]] 與 [[04_熨燙溫度與蒸氣限制]] 同名），會在實際使用時產生錯誤。  
+
+建議先統一頁面編號（避免重複），並在每頁的「前往/相關頁面」區塊加入完整且唯一的跨頁連結，才能符合品質審核要求。</li><li>[自動修正] 已依據審核意見完成第 1 次條目修訂</li><li>[品質檢查] 結果=未通過｜意見：****  
+審核結果說明：
+
+1. **符合 CNS 8148 / ISO 3758 事實標準**  
+   - 大部分符號說明（如水盆點數、三角形漂白、正方形乾燥）與標準相符，內容基本正確。  
+   - 仍有少量用詞不夠精確（例如「任何氧化性漂白劑（含氯漂白劑）」的描述可更明確為「任何漂白劑，含氯或非氯」），但不致於產生重大誤解。
+
+2. **對新手的白話易懂度**  
+   - 語句簡潔、使用了粗體與列表，對初學者友好。  
+   - 部分頁面（如 04_漂白符號與化學藥劑 與 04_熨燙溫度與蒸氣限制）出現重複或混淆的標題，可能讓讀者感到困惑。  
+
+3. **跨頁連結（[[跨頁連結]]）完整性**  
+   - 雖然每頁都有「前往/相關頁面」區塊，但存在以下問題：  
+     - **頁面編號衝突**：`04_漂白符號與化學藥劑` 同時出現在兩個不同內容（漂白說明與熨燙說明），導致連結指向錯誤。  
+     - **缺少必要連結**：例如 `02_漂白符號與漂白方式` 沒有連結回 `04_漂白符號與化學藥劑`（漂白藥劑說明），而 `06_常見衣物材質實戰速查` 只自我連結，未提供其他相關頁面的導向。  
+     - **重複頁面**：`02_漂白符號與化學藥劑`、`07_漂白符號與化學藥劑`、`08_漂白符號與化學藥劑` 內容完全相同，造成不必要的冗餘且連結混亂。  
+
+4. **結論**  
+   - 雖然符號說明基本正確且文字易懂，但因頁面命名衝突、重複內容以及跨頁連結不完整或錯誤，未能滿足「事實標準 + 白話易懂 + 必備跨頁連結」的全部要求，故判定為 **FAIL**。  
+
+**建議改進方向**  
+- 重新規劃頁面編號，確保每個編號僅對應單一主題（例如將漂白藥劑說明統一為 `04_漂白藥劑說明`，熨燙說明改為 `05_熨燙溫度與蒸氣限制`）。  
+- 刪除或合併重複的漂白藥劑頁面（07、08），避免內容冗餘。  
+- 完善「前往/相關頁面」區塊，確保每個主題都有至少兩個相關頁面的連結，並檢查所有連結指向正確的頁面。  
+- 在描述中使用更精確的術語（如「任何漂白劑」或「非氯漂白劑」），提升新手的理解度。</li><li>[資料擷取] 已處理 文獻 05《熨燙溫度控制與常見布料燙傷預防》 → 目前累積 11 個知識節點</li><li>[品質檢查] 結果=通過｜意見：– 內容大體符合 CNS 8148 / ISO 3758 的規範，文字通俗易懂，且各頁皆有跨頁連結；唯一需留意的是頁面編號有重複（如 02、04），建議統一命名以提升維護性。</li></ul>
+                </div>
+            </section>
+
+            <section class="slide">
+                <div>
+                    <div class="badge">通用解碼法則</div>
+                    <h2>看懂所有洗標的三大萬用密碼</h2>
+                    <div class="grid-3">
+                        <div class="card" style="background:#fff1f2; border-color:#fecdd3;">
+                            <div class="big-symbol" style="color:#e11d48;">✕ 打叉</div>
+                            <h3>絕對禁止</h3>
+                            <p class="step-text">任何圖形只要疊上大叉叉，代表完全不能執行該動作（例如水盆打叉＝不可水洗）。</p>
+                        </div>
+                        <div class="card" style="background:#fffbeb; border-color:#fde68a;">
+                            <div class="big-symbol" style="color:#d97706;">● 圓點</div>
+                            <h3>溫度高低</h3>
+                            <p class="step-text">點數越多代表可承受溫度越高：1 點低溫、2 點中溫、3 點高溫。</p>
+                        </div>
+                        <div class="card" style="background:#f0f9ff; border-color:#bae6fd;">
+                            <div class="big-symbol" style="color:#0284c7;">═ 橫線</div>
+                            <h3>溫和程度</h3>
+                            <p class="step-text">圖示下方橫線越多代表水流與力道要越輕柔：無線正常、1 線緩和、2 線極輕柔。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-box">記憶口訣：先看「外框形狀」決定做什麼動作，再看「內部點線叉」決定溫度與力道限制。</div>
+            </section>
+
+            
+        <section class="slide">
+            <div class="slide-body">
+                <div class="cat-header">
+                    <div class="icon-box"><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#0284c7" stroke-width="5"><path d="M15 35 L25 75 L75 75 L85 35"/><path d="M18 48 Q35 42 50 48 T82 48"/><circle cx="50" cy="62" r="4" fill="#0284c7"/></svg></div>
+                    <div>
+                        <div class="badge">核心符號解析 1 / 5</div>
+                        <h2>水洗符號</h2>
+                    </div>
+                </div>
+                <div class="summary-box">水盆圖示搭配圓點與橫線，指示適用溫度與機械力道。</div>
+                <ul class="rule-list"><li><span class='dot'>•</span><span>1 點＝30 °C（低溫）</span></li><li><span class='dot'>•</span><span>2 點＝40 °C（中溫）</span></li><li><span class='dot'>•</span><span>3 點＝60 °C（高溫）</span></li><li><span class='dot'>•</span><span>無橫線＝標準力道</span></li><li><span class='dot'>•</span><span>1 條橫線＝緩和</span></li><li><span class='dot'>•</span><span>2 條橫線＝非常緩和</span></li></ul>
+            </div>
+            <div class="warning-box">新手避雷提醒：選錯溫度或力道會造成變形、掉色或縮水。</div>
+        </section>
+        
+        <section class="slide">
+            <div class="slide-body">
+                <div class="cat-header">
+                    <div class="icon-box"><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#d97706" stroke-width="5"><polygon points="50,20 85,80 15,80"/><line x1="42" y1="68" x2="58" y2="42"/><line x1="54" y1="72" x2="68" y2="48"/></svg></div>
+                    <div>
+                        <div class="badge">核心符號解析 2 / 5</div>
+                        <h2>漂白符號</h2>
+                    </div>
+                </div>
+                <div class="summary-box">三角形內的標記決定可用漂白劑類型與限制。</div>
+                <ul class="rule-list"><li><span class='dot'>•</span><span>空心三角形：可用任何氧化性漂白劑（含氯）</span></li><li><span class='dot'>•</span><span>兩條斜線：僅限非氯氧系漂白劑</span></li><li><span class='dot'>•</span><span>一條斜線或叉叉：禁止漂白</span></li></ul>
+            </div>
+            <div class="warning-box">新手避雷提醒：含氯漂白劑會破壞羊毛、蠶絲等蛋白質纖維並致泛黃。</div>
+        </section>
+        
+        <section class="slide">
+            <div class="slide-body">
+                <div class="cat-header">
+                    <div class="icon-box"><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#059669" stroke-width="5"><rect x="20" y="20" width="60" height="60" rx="4"/><circle cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="4" fill="#059669"/></svg></div>
+                    <div>
+                        <div class="badge">核心符號解析 3 / 5</div>
+                        <h2>乾燥符號</h2>
+                    </div>
+                </div>
+                <div class="summary-box">正方形內的線條表示不同的晾乾或烘乾方式。</div>
+                <ul class="rule-list"><li><span class='dot'>•</span><span>垂直線：吊掛晾乾</span></li><li><span class='dot'>•</span><span>水平線：平放乾燥（適合羊毛）</span></li><li><span class='dot'>•</span><span>圓圈：機器滾筒烘乾（僅耐熱材質）</span></li></ul>
+            </div>
+            <div class="warning-box">新手避雷提醒：防水外套禁用高溫烘乾與滾筒烘乾，會剝落防水膜。</div>
+        </section>
+        
+        <section class="slide">
+            <div class="slide-body">
+                <div class="cat-header">
+                    <div class="icon-box"><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#e11d48" stroke-width="5"><path d="M25 35 L65 35 L82 70 L18 70 Q20 50 38 50 L72 50"/><circle cx="42" cy="60" r="3.5" fill="#e11d48"/><circle cx="56" cy="60" r="3.5" fill="#e11d48"/></svg></div>
+                    <div>
+                        <div class="badge">核心符號解析 4 / 5</div>
+                        <h2>熨燙符號</h2>
+                    </div>
+                </div>
+                <div class="summary-box">點數表示最高熨燙溫度，叉叉表示禁止使用蒸氣。</div>
+                <ul class="rule-list"><li><span class='dot'>•</span><span>1 點＝110 °C，適用聚酯/尼龍</span></li><li><span class='dot'>•</span><span>2 點＝150 °C，適用羊毛/絲綢</span></li><li><span class='dot'>•</span><span>3 點＝200 °C，適用純棉/亞麻</span></li><li><span class='dot'>•</span><span>蒸氣線被叉：只能乾燙，禁止蒸氣</span></li></ul>
+            </div>
+            <div class="warning-box">新手避雷提醒：超過最高溫度會燙傷布料或產生亮面。</div>
+        </section>
+        
+        <section class="slide">
+            <div class="slide-body">
+                <div class="cat-header">
+                    <div class="icon-box"><svg viewBox="0 0 100 100" width="60" height="60" fill="none" stroke="#4f46e5" stroke-width="5"><circle cx="50" cy="50" r="32"/><text x="50" y="61" text-anchor="middle" fill="#4f46e5" stroke="none" font-size="30" font-weight="bold">P</text></svg></div>
+                    <div>
+                        <div class="badge">核心符號解析 5 / 5</div>
+                        <h2>專業維護符號</h2>
+                    </div>
+                </div>
+                <div class="summary-box">圓圈內字母指示可用的乾洗或濕洗方式。</div>
+                <ul class="rule-list"><li><span class='dot'>•</span><span>P：可使用四氯乙烯乾洗</span></li><li><span class='dot'>•</span><span>F：專業乾洗（有機溶劑）</span></li><li><span class='dot'>•</span><span>W：專業濕洗</span></li><li><span class='dot'>•</span><span>✕：禁止任何乾洗或濕洗</span></li></ul>
+            </div>
+            <div class="warning-box">新手避雷提醒：未遵守會損壞高檔或功能性布料。</div>
+        </section>
+        
+
+            <section class="slide">
+                <div>
+                    <div class="badge">實戰應用</div>
+                    <h2>常見衣物材質洗標速查</h2>
+                    <div class="grid-3">
+        <div class="card">
+            <h3>聚酯／尼龍</h3>
+            <p class="step-text"><strong>建議流程：</strong>熨燙最高110 °C，使用低溫設定，可加蒸氣。</p>
+            <p class="forbid-text"><strong>絕對禁止：</strong>超過110 °C會產生亮面燙傷。</p>
+        </div>
+        
+        <div class="card">
+            <h3>羊毛／絲綢</h3>
+            <p class="step-text"><strong>建議流程：</strong>熨燙最高150 °C，建議低溫或蒸氣；乾燥使用平放。</p>
+            <p class="forbid-text"><strong>絕對禁止：</strong>高溫或強力機械會拉長變形。</p>
+        </div>
+        
+        <div class="card">
+            <h3>純棉／亞麻</h3>
+            <p class="step-text"><strong>建議流程：</strong>熨燙最高200 °C，可使用高溫蒸氣。</p>
+            <p class="forbid-text"><strong>絕對禁止：</strong>低溫無法有效去除皺折。</p>
+        </div>
+        </div>
+                </div>
+                <div class="summary-box">洗衣前只需花 5 秒檢查領口或側邊內縫洗標，就能避開 90% 的洗衣災難。</div>
+            </section>
+
+            <section class="slide">
+                <div>
+                    <div class="badge">隨堂小測驗</div>
+                    <h2>標示為空心三角形且內有兩條斜線，表示什麼？</h2>
+                    <div class="quiz-list"><button type="button" class="quiz-btn" onclick="checkQuiz(0, 1)">可使用含氯漂白劑</button><button type="button" class="quiz-btn" onclick="checkQuiz(1, 1)">只能使用非氯氧系漂白劑</button><button type="button" class="quiz-btn" onclick="checkQuiz(2, 1)">禁止任何漂白</button></div>
+                </div>
+                <div id="quiz-feedback" class="quiz-feedback"></div>
+            </section>
+
+            <section class="slide center-slide">
+                <h1>恭喜完成洗衣標示入門！</h1>
+                <p class="subtitle">你已經掌握水洗、漂白、乾燥、熨燙與專業維護五大圖形密碼，快去檢查衣櫃裡的衣服洗標吧！</p>
+                <button type="button" class="nav-btn btn-next" onclick="goToSlide(0)">重新瀏覽簡報</button>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <button type="button" class="nav-btn btn-prev" onclick="prevSlide()">← 上一頁</button>
+        <div class="hint">由 LLM Wiki 與狀態機驗證流程自動生成</div>
+        <button type="button" class="nav-btn btn-next" onclick="nextSlide()">下一頁 →</button>
+    </footer>
+
+    <script>
+        var current = 0;
+        var slides = document.querySelectorAll('.slide');
+        var indicator = document.getElementById('page-indicator');
+        var explanationText = "兩條斜線的三角形只允許使用非氯的氧系漂白劑，如過氧化氫或過碳酸鈉。";
+
+        function goToSlide(n) {
+            slides[current].classList.remove('active');
+            current = (n + slides.length) % slides.length;
+            slides[current].classList.add('active');
+            indicator.textContent = (current + 1) + ' / ' + slides.length;
+        }
+
+        function nextSlide() { goToSlide(current + 1); }
+        function prevSlide() { goToSlide(current - 1); }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function checkQuiz(selected, correct) {
+            var fb = document.getElementById('quiz-feedback');
+            fb.className = 'quiz-feedback';
+            if (selected === correct) {
+                fb.classList.add('ok');
+                fb.textContent = '答對了！' + explanationText;
+            } else {
+                fb.classList.add('err');
+                fb.textContent = '再想一下喔！提示：' + explanationText;
+            }
+        }
+    </script>
+</body>
+</html>

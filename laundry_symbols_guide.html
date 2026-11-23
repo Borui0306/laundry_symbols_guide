@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>洗衣符號辨識與衣物洗護指南 - LLM Wiki 教學簡報</title>
+  <style>
+    :root {
+      --bg: #f4f7f9;
+      --surface: #ffffff;
+      --navy: #1e3a5f;
+      --sky: #0284c7;
+      --mint: #0d9488;
+      --coral: #e11d48;
+      --amber: #d97706;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .topbar {
+      background: var(--navy);
+      color: #f8fafc;
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+    .stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 2rem;
+    }
+    .slide {
+      display: none;
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(30, 58, 95, 0.08);
+      border: 1px solid #cbd5e1;
+      width: 100%;
+      max-width: 1000px;
+      min-height: 540px;
+      padding: 2.6rem 3.2rem;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 0.25s ease;
+    }
+    .slide.active { display: flex; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pill {
+      display: inline-block;
+      background: #e0f2fe;
+      color: var(--sky);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      width: fit-content;
+    }
+    h1 { font-size: 2.45rem; color: var(--navy); line-height: 1.25; margin-bottom: 1rem; }
+    h2 { font-size: 1.8rem; color: var(--navy); margin-bottom: 1rem; }
+    p.desc { font-size: 1.06rem; color: var(--muted); line-height: 1.68; margin-bottom: 1.2rem; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.85rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.1rem;
+      text-align: center;
+    }
+    .symbol-icon {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--sky);
+      margin-bottom: 0.4rem;
+      font-family: monospace;
+    }
+    .card h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 0.4rem; }
+    .card p { font-size: 0.88rem; line-height: 1.5; color: #475569; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+      margin-top: 0.4rem;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 0.72rem 0.95rem;
+      text-align: left;
+    }
+    th { background: #f1f5f9; color: var(--navy); }
+    .decoder-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
+    .dec-btn {
+      background: #ffffff;
+      border: 1px solid #94a3b8;
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--navy);
+    }
+    .dec-btn.active {
+      background: var(--sky);
+      color: #ffffff;
+      border-color: var(--sky);
+    }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0.8rem 0; }
+    .quiz-btn {
+      background: #f8fafc;
+      color: var(--navy);
+      border: 1px solid #cbd5e1;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+    .quiz-btn:hover { border-color: var(--sky); background: #f0f9ff; }
+    .feedback {
+      margin-top: 0.75rem;
+      padding: 0.85rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: none;
+    }
+    .controls {
+      height: 62px;
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+    }
+    .nav-btn {
+      background: var(--navy);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .nav-btn:hover { background: var(--sky); }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>LAUNDRY CARE 101 // 日常洗衣符號辨識教學簡報</span>
+  <span>SOURCE: Laundry-Care-Wiki (ISO 3758 Standard)</span>
+</div>
+
+<div class="stage">
+  <div class="slide active">
+    <span class="pill">LLM Wiki 知識庫自動生成教材</span>
+    <h1>再也不怕洗壞衣服！<br>洗衣符號辨識與洗護指南</h1>
+    <p class="desc">每天穿衣服都會看到的衣領洗標，其實是一套全球通用的「5 個形狀 ＋ 點點與線條」密碼。3 分鐘帶你從零看懂標準答案！</p>
+    <div style="background:#f0f9ff; border-left:4px solid var(--sky); padding:1rem 1.25rem; border-radius:6px; font-size:0.98rem;">
+      <strong>學習目標：</strong> 學會區分五大基礎圖形、解讀水溫與水流強度密碼，並通過最後的洗標實戰測驗。
+    </div>
+  </div>
+
+  <div class="slide">
+    <span class="pill">01 / FIVE BASIC SHAPES</span>
+    <h2>第一步：先認出洗標上的「五大基礎形狀」</h2>
+    <p class="desc">不管衣服品牌來自哪個國家，洗標永遠按照這 5 個固定順序排列：</p>
+    <div class="grid-5">
+      <div class="card">
+        <div class="symbol-icon">[ \_/ ]</div>
+        <h3>1. 水盆</h3>
+        <p><strong>水洗方式</strong><br>決定能否丟洗衣機與最高水溫。</p>
+      </div>
+      <div class="card">
+        <div class="symbol-icon">[ △ ]</div>
+        <h3>2. 三角形</h3>
+        <p><strong>漂白規定</strong><br>決定能否使用含氯或氧系漂白水。</p>
+      </div>
+      <div class="card">
+        <div class="symbol-icon">[ □ ]</div>
+        <h3>3. 正方形</h3>
+        <p><strong>乾燥方式</strong><br>決定能不能烘乾，或該懸掛／平放晾乾。</p>
+      </div>
+      <div class="card">
+        <div class="symbol-icon">[ 熨 ]</div>
+        <h3>4. 熨斗</h3>
+        <p><strong>熨燙溫度</strong><br>決定整燙時的最高底板溫度限制。</p>
+      </div>
+      <div class="card">
+        <div class="symbol-icon">[ ○ ]</div>
+        <h3>5. 圓圈</h3>
+        <p><strong>專業乾洗</strong><br>代表是否需要送洗衣店乾洗處理。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <span class="pill">02 / DOTS & LINES DECODING</span>
+    <h2>第二步：記住「點點」與「底線」的通用密碼</h2>
+    <p class="desc">所有符號內部的加註記號都遵循同一套邏輯，只要背一次就能套用在全部圖形上：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>附加記號</th>
+          <th>在水盆／熨斗／烘乾機裡的意義</th>
+          <th>生活白話翻譯</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>打叉（✕）</strong></td>
+          <td>絕對禁止該項操作</td>
+          <td>例如三角形打叉＝「絕對不可漂白」</td>
+        </tr>
+        <tr>
+          <td><strong>1 個黑點（•）</strong></td>
+          <td>低溫限制（水洗 30°C / 熨燙 110°C）</td>
+          <td>請用冷水或低溫，怕熱會縮水變形</td>
+        </tr>
+        <tr>
+          <td><strong>2 個黑點（••）</strong></td>
+          <td>中溫限制（水洗 40°C / 熨燙 150°C）</td>
+          <td>一般日常溫水洗程或中溫整燙</td>
+        </tr>
+        <tr>
+          <td><strong>下方 1 條橫線</strong></td>
+          <td>溫和洗程（低轉速脫水）</td>
+          <td>切換到洗衣機「柔洗／化纖模式」</td>
+        </tr>
+        <tr>
+          <td><strong>下方 2 條橫線</strong></td>
+          <td>極溫和洗程（不可強力扭轉）</td>
+          <td>切換到「手洗／羊毛模式」並裝洗衣袋</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="slide">
+    <span class="pill">03 / INTERACTIVE SYMBOL DECODER（點擊符號看正解）</span>
+    <h2>最容易搞混的「乾燥與漂白符號」互動解碼器</h2>
+    <p class="desc">點擊下方常見卻最容易看錯的洗標符號，查看它的<strong>唯一標準定義</strong>：</p>
+    <div class="decoder-box">
+      <div class="btn-row">
+        <button class="dec-btn active" onclick="decodeSym('dry_circle', this)">正方形內有圓圈＋打叉</button>
+        <button class="dec-btn" onclick="decodeSym('dry_flat', this)">正方形內有一條橫線</button>
+        <button class="dec-btn" onclick="decodeSym('bleach_slash', this)">三角形內有兩條斜線</button>
+        <button class="dec-btn" onclick="decodeSym('hand_wash', this)">水盆內有一隻手</button>
+      </div>
+      <div id="decodeOutput">
+        <h3 style="color: var(--coral); margin-bottom: 0.45rem;">標準答案：不可滾筒烘乾（Do Not Tumble Dry）</h3>
+        <p style="line-height: 1.65; color: var(--text);">正方形代表乾燥，裡面的圓圈代表「滾筒烘衣機」。打叉表示<strong>這件衣服絕對不能丟烘衣機</strong>，否則會嚴重縮水或損壞彈性纖維（常見於針織衫、機能排汗衣）。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <span class="pill">04 / STANDARD ANSWER QUIZ（隨堂驗收）</span>
+    <h2>實戰標準答案測驗：這件毛衣該怎麼洗？</h2>
+    <p class="desc"><strong>題目情境：</strong> 你買了一件冬天的羊毛針織衫，衣領洗標畫著：<strong>「水盆裡有 1 個黑點 ＋ 水盆下方有 2 條橫線」</strong>，請問這組符號的唯一正確解讀是什麼？</p>
+    <div class="quiz-grid">
+      <button class="quiz-btn" onclick="checkQuiz(1)">A. 可用 60°C 熱水強力機洗，洗完直接高溫烘乾</button>
+      <button class="quiz-btn" onclick="checkQuiz(2)">B. 最高水溫 30°C，並需使用「極溫和／手洗模式」輕柔洗滌</button>
+      <button class="quiz-btn" onclick="checkQuiz(3)">C. 只能送專業乾洗店，完全不能碰水</button>
+      <button class="quiz-btn" onclick="checkQuiz(4)">D. 水溫 40°C，且必須使用含氯漂白水浸泡</button>
+    </div>
+    <div id="quizRes" class="feedback"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="nav-btn" onclick="move(-1)">← 上一頁</button>
+  <span id="pageText" style="font-weight: 700; color: var(--muted);">1 / 5</span>
+  <button class="nav-btn" onclick="move(1)">下一頁 →</button>
+</div>
+
+<script>
+  let cur = 0;
+  const slides = document.querySelectorAll('.slide');
+  const pageText = document.getElementById('pageText');
+
+  const symbolDict = {
+    dry_circle: {
+      title: '標準答案：不可滾筒烘乾（Do Not Tumble Dry）',
+      color: 'var(--coral)',
+      desc: '正方形代表乾燥，裡面的圓圈代表「滾筒烘衣機」。打叉表示<strong>這件衣服絕對不能丟烘衣機</strong>，否則會嚴重縮水或損壞彈性纖維（常見於針織衫、機能排汗衣）。'
+    },
+    dry_flat: {
+      title: '標準答案：平放晾乾（Dry Flat）',
+      color: 'var(--sky)',
+      desc: '正方形內畫一條水平橫線，代表這件衣服吸水後重量重，<strong>不能用衣架吊掛</strong>（會把肩膀拉長變形），必須平鋪在曬衣網或毛巾上晾乾（常見於毛衣、針織外套）。'
+    },
+    bleach_slash: {
+      title: '標準答案：僅限氧系漂白／彩漂（Non-Chlorine Bleach Only）',
+      color: 'var(--amber)',
+      desc: '空心三角形代表可用含氯漂白水；但三角形內若有兩條斜線，代表<strong>只能使用「氧系漂白劑（過碳酸鈉／彩漂）」</strong>，不可使用一般含氯漂白水，以免衣物褪色泛黃。'
+    },
+    hand_wash: {
+      title: '標準答案：限手洗（Hand Wash Only，最高水溫 40°C）',
+      color: 'var(--mint)',
+      desc: '水盆裡伸入一隻手的圖示，代表不可用一般洗衣機攪拌，建議以最高不超過 40°C 的水溫輕柔手洗，或放入洗衣袋使用洗衣機最弱的「手洗行程」。'
+    }
+  };
+
+  function update() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+    pageText.textContent = `${cur + 1} / ${slides.length}`;
+  }
+
+  function move(step) {
+    cur = Math.max(0, Math.min(slides.length - 1, cur + step));
+    update();
+  }
+
+  function decodeSym(key, btn) {
+    document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const item = symbolDict[key];
+    document.getElementById('decodeOutput').innerHTML = `
+      <h3 style="color: ${item.color}; margin-bottom: 0.45rem;">${item.title}</h3>
+      <p style="line-height: 1.65; color: var(--text);">${item.desc}</p>
+    `;
+  }
+
+  function checkQuiz(ans) {
+    const box = document.getElementById('quizRes');
+    box.style.display = 'block';
+    if (ans === 2) {
+      box.style.background = '#dcfce7';
+      box.style.border = '1px solid #16a34a';
+      box.style.color = '#14532d';
+      box.innerHTML = '<strong>答對了！標準答案是 B。</strong><br>拆解公式：水盆＝水洗；1 個黑點＝最高水溫 <strong>30°C</strong>；下方 2 條橫線＝<strong>極溫和／手洗洗程</strong>。兩者組合起來就是「30°C 以下極溫和洗滌」。';
+    } else {
+      box.style.background = '#ffe4e6';
+      box.style.border = '1px solid #e11d48';
+      box.style.color = '#881337';
+      box.innerHTML = '<strong>答錯囉！請對照上一頁的密碼表：</strong><br>提示：「1 個黑點」代表低溫 30°C，「水盆下方 2 條線」代表極溫和／手洗洗程，再選一次看看！';
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+    if (e.key === 'ArrowLeft') move(-1);
+  });
+</script>
+</body>
+</html>
